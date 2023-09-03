@@ -5,9 +5,18 @@ from .models import tasks
 from .serializers import tasksSerializer 
 from django.views.decorators.csrf import csrf_exempt
 
+
 class taskView(APIView):
      def get(self,request, format=None,):
+        action_filter = request.query_params.get('actions')
         query = tasks.objects.all().order_by('-created')
+
+        if action_filter == 'Finished':
+            query = query.filter(status = 'Finished')
+
+        if action_filter == 'Active':
+            query = query.filter(status = 'In Progress')
+
         serializer = tasksSerializer(query,  many=True)
         return Response(serializer.data, status=status.HTTP_302_FOUND)
      
@@ -21,8 +30,8 @@ class taskView(APIView):
                  'msg': 'created..'
              }
              return Response(serializer.data, status=status.HTTP_201_CREATED)
-         print(serializer.errors)
          return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+     
      @csrf_exempt
      def patch(self, request, id,format=None):
         query = tasks.objects.get(pk = id)
@@ -34,7 +43,6 @@ class taskView(APIView):
      
      
      def delete(self, request, id,format=None):
-        print(id)
         try:
             task = tasks.objects.get(task_id=id)
             task.delete()

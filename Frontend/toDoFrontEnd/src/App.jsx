@@ -70,6 +70,24 @@ function App() {
     })
   };
 
+    const actionsApi = (value) => {
+      fetch(`http://127.0.0.1:8000/todo/?actions=${value}`, { method: 'GET' })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          setData(data);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+      }
+    
+  
+    const handleSelectChange = (e) => {
+      const selectedValue = e.target.value;
+      actionsApi(selectedValue);
+    }
+
   return (
     <div>
       <section className="vh-100" style={{ backgroundColor: '#eee' }}>
@@ -100,10 +118,10 @@ function App() {
                       >
                         ADD
                       </button>
-                      <p className="small mb-0 me-2 text-muted">Filter</p>
-                      <select className="form-select form-select-sm">
+                      <p className="mb-0 px-3 text-muted">Filter</p>
+                      <select className="form-select form-select-sm" onChange={handleSelectChange}>
                         <option value="">All</option>
-                        <option value="Finished">Finished</option>
+                        <option value="Finished" >Finished</option>
                         <option value="Active">Active</option>
                       </select>
                     </div>
@@ -140,7 +158,7 @@ function App() {
                               Finished
                             </button>
                           </td>
-                          {/* <td>item.created</td> */}
+                          <td>{item.created}</td>
                         </tr>
                       ))}
                     </tbody>
